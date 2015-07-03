@@ -100,7 +100,7 @@ namespace MonopolyDeal
 
         public static List<Card> deckDiscard = new List<Card>();
 
-        public static int numOfPlayers = 2;
+        public static int numOfPlayers = 3;
 
         public static List<string> playerNames = new List<string>(){"Eric","Loser2","Loser3","Loser4","Loser5","Loser6"};
 

@@ -342,10 +342,10 @@ namespace MonopolyDeal
             }
             else //Still waiting for other players to pay
             {
-                Prompt.Content = "Waiting for Players: ";
+                Prompt.Content = "Waiting for: ";
                 foreach (int player in MainWindow.payersLeft)
                 {
-                    Prompt.Content += (player + 1) + ", ";
+                    Prompt.Content += MainWindow.playerNames[player] + ", ";
                 }
                 MainWindow.chosenPlayer = MainWindow.payersLeft[0];
                 MainWindow.playerTurns[MainWindow.chosenPlayer].acknowledgeAttack();
@@ -1207,10 +1207,10 @@ namespace MonopolyDeal
             {
                 MainWindow.payersLeft.Add(i);
             }
-            Prompt.Content = "Waiting for Players: ";
+            Prompt.Content = "Waiting for: ";
             foreach (int player in MainWindow.payersLeft)
             {
-                Prompt.Content += (player + 1) + ", ";
+                Prompt.Content += MainWindow.playerNames[player] + ", ";
             }
             button1.Visibility = System.Windows.Visibility.Hidden;
             button2.Visibility = System.Windows.Visibility.Hidden;
@@ -1248,7 +1248,7 @@ namespace MonopolyDeal
             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.DebtCollector__3);
             MainWindow.playedCard = Card.DebtCollector__3;
             showTable();
-            Prompt.Content = "Waiting for Player " + (MainWindow.chosenPlayer + 1) + " to select payment...";
+            Prompt.Content = "Waiting for " + (MainWindow.playerNames[MainWindow.chosenPlayer]) + " to select payment...";
             button1.Visibility = System.Windows.Visibility.Hidden;
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
@@ -1307,7 +1307,7 @@ namespace MonopolyDeal
             MainWindow.playedCard = Card.RentWild__3;
             MainWindow.hasBeenRented[MainWindow.playerNum][MainWindow.propIndex] = true;
             showTable();
-            Prompt.Content = "Waiting for Player " + (MainWindow.chosenPlayer + 1) + " to select payment...";
+            Prompt.Content = "Waiting for " + (MainWindow.playerNames[MainWindow.chosenPlayer]) + " to select payment...";
             button1.Visibility = System.Windows.Visibility.Hidden;
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
@@ -1454,10 +1454,10 @@ namespace MonopolyDeal
             {
                 MainWindow.payersLeft.Add(i);
             }
-            Prompt.Content = "Waiting for Players: ";
+            Prompt.Content = "Waiting for: ";
             foreach (int player in MainWindow.payersLeft)
             {
-                Prompt.Content += (player + 1) + ", ";
+                Prompt.Content += MainWindow.playerNames[player] + ", ";
             }
             button1.Visibility = System.Windows.Visibility.Hidden;
             button2.Visibility = System.Windows.Visibility.Hidden;

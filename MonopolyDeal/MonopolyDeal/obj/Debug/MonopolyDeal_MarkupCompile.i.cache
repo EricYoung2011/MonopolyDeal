@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Eric\Desktop\MonopDeal_WPF\MonopolyDeal\MonopolyDeal\obj\Debug\
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Debug\
 MonopolyDeal
 none
 false
 DEBUG;TRACE
-C:\Users\Eric\Desktop\MonopDeal_WPF\MonopolyDeal\MonopolyDeal\App.xaml
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\App.xaml
 21758853394
 
 10406284701
 12-114506869
 MainWindow.xaml;playerTurn.xaml;
 
-False
+True
 
