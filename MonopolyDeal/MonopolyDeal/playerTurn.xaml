@@ -20,6 +20,7 @@
         <TextBlock x:Name="turnsLeftText" HorizontalAlignment="Left" Margin="570,47,0,0" TextWrapping="Wrap" Text="Turns Left" VerticalAlignment="Top" Height="19" Width="56"/>
         <Label x:Name="Prompt" Content="" HorizontalAlignment="Left" Margin="106,10,0,0" VerticalAlignment="Top" Height="32" Width="438" BorderThickness="1" BorderBrush="Black" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Visible"/>
         <TextBox x:Name="handLabel" HorizontalAlignment="Left" Height="19" Margin="10,46,0,0" TextWrapping="Wrap" Text="Hand:" VerticalAlignment="Top" Width="110" AllowDrop="False" />
+        <TextBox x:Name="universalPrompt" HorizontalAlignment="Left" Height="23" Margin="851,119,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" BorderBrush="Black" HorizontalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto" IsReadOnly="True"/>
 
     </Grid>
 </Window>

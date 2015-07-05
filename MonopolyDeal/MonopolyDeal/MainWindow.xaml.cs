@@ -39,9 +39,9 @@ namespace MonopolyDeal
         RentRedYellow__1,
         RentGreenBlue__1,
         RentPinkOrange__1,
-        RentBlackLime__1,
+        RentBlackUtility__1,
         PropertyBrown__1,
-        PropertyLime__1,
+        PropertyUtility__1,
         PropertyBlue__4,
         PropertyLightBlue__1,
         PropertyPink__2,
@@ -57,8 +57,8 @@ namespace MonopolyDeal
         PropertyOrangePink__2,
         PropertyLightBlueBlack__4,
         PropertyBlackLightBlue__4,
-        PropertyLimeBlack__2,
-        PropertyBlackLime__2,
+        PropertyUtilityBlack__2,
+        PropertyBlackUtility__2,
         PropertyBrownLightBlue__1,
         PropertyLightBlueBrown__1,
         PropertyBlueGreen__4,
@@ -66,7 +66,7 @@ namespace MonopolyDeal
         PropertyGreenBlack__4,
         PropertyBlackGreen__4,
         PropertyWildBrown,
-        PropertyWildLime,
+        PropertyWildUtility,
         PropertyWildBlue,
         PropertyWildLightBlue,
         PropertyWildPink,
@@ -100,7 +100,7 @@ namespace MonopolyDeal
 
         public static List<Card> deckDiscard = new List<Card>();
 
-        public static int numOfPlayers = 3;
+        public static int numOfPlayers = 2;
 
         public static List<string> playerNames = new List<string>(){"Eric","Loser2","Loser3","Loser4","Loser5","Loser6"};
 
@@ -113,6 +113,14 @@ namespace MonopolyDeal
         public static List<List<TextBox>> otherMoneyLabels = new List<List<TextBox>>();
 
         public static List<List<TextBox>> otherPropertyLabels = new List<List<TextBox>>();
+
+        public static List<List<TextBox>> otherCardsLeftText = new List<List<TextBox>>();
+
+        public static List<List<TextBox>> otherCardsLeft = new List<List<TextBox>>();
+
+        public static List<List<TextBox>> otherTurnsLeftText = new List<List<TextBox>>();
+
+        public static List<List<TextBox>> otherTurnsLeft = new List<List<TextBox>>();
 
         public static int cardsToDeal = 5;
 
@@ -130,6 +138,8 @@ namespace MonopolyDeal
 
         public static int propIndex2;
 
+        public static string propColor;
+
         public static CardType cardType;
 
         public static int playNum;
@@ -145,6 +155,8 @@ namespace MonopolyDeal
         public static PropertyType propertyType;
 
         public static List<int> payersLeft = new List<int>();
+
+        public static int justSayNos = 0;
 
         //public static List<List<bool>> isMonopoly = new List<List<bool>>();
 
@@ -170,7 +182,7 @@ namespace MonopolyDeal
         //1: All properties on table
         //2: Individual's properties
         //3: Individual's properties of certain color
-        //[brown,lime,blue,lightblue,pink,orange,red,yellow,green,black]
+        //[brown,utility,blue,lightblue,pink,orange,red,yellow,green,black]
         public static List<List<List<Card>>> AllTableProperties = new List<List<List<Card>>>();
 
         public static turnStage stage = new turnStage();
@@ -286,8 +298,8 @@ namespace MonopolyDeal
             Card.RentGreenBlue__1,
             Card.RentBrownLightBlue__1,
             Card.RentBrownLightBlue__1,
-            Card.RentBlackLime__1,
-            Card.RentBlackLime__1,
+            Card.RentBlackUtility__1,
+            Card.RentBlackUtility__1,
             Card.PropertyBlack__2,
             Card.PropertyBlack__2,
             Card.PropertyBlack__2,
@@ -302,8 +314,8 @@ namespace MonopolyDeal
             Card.PropertyLightBlue__1,
             Card.PropertyLightBlue__1,
             Card.PropertyLightBlue__1,
-            Card.PropertyLime__1,
-            Card.PropertyLime__1,
+            Card.PropertyUtility__1,
+            Card.PropertyUtility__1,
             Card.PropertyOrange__2,
             Card.PropertyOrange__2,
             Card.PropertyOrange__2,
@@ -323,7 +335,7 @@ namespace MonopolyDeal
             Card.PropertyPinkOrange__2,
             Card.PropertyPinkOrange__2,
             Card.PropertyLightBlueBlack__4,
-            Card.PropertyLimeBlack__2,
+            Card.PropertyUtilityBlack__2,
             Card.PropertyBrownLightBlue__1,
             Card.PropertyBlueGreen__4,
             Card.PropertyGreenBlack__4
@@ -352,6 +364,11 @@ namespace MonopolyDeal
                 otherPropertyLabels.Add(new List<TextBox>());
                 otherTable_Money.Add(new List<ListBox>());
                 otherTable_Properties.Add(new List<ListBox>());
+                otherCardsLeft.Add(new List<TextBox>());
+                otherCardsLeftText.Add(new List<TextBox>());
+                otherTurnsLeft.Add(new List<TextBox>());
+                otherTurnsLeftText.Add(new List<TextBox>());
+
                 for (int j = 0; j < (numOfPlayers); j++)
                 {
                     otherMoneyLabels[i].Add(new TextBox());
@@ -359,6 +376,10 @@ namespace MonopolyDeal
                     otherPropertyLabels[i].Add(new TextBox());
                     otherTable_Money[i].Add(new ListBox());
                     otherTable_Properties[i].Add(new ListBox());
+                    otherCardsLeft[i].Add(new TextBox());
+                    otherCardsLeftText[i].Add(new TextBox());
+                    otherTurnsLeft[i].Add(new TextBox());
+                    otherTurnsLeftText[i].Add(new TextBox());
                 }
                 //isMonopoly.Add(new List<bool>());
                 hasBeenRented.Add(new List<bool>());
@@ -372,7 +393,8 @@ namespace MonopolyDeal
             setupLayout();
             shuffleDeck();
             dealDeck();
-            playerTurns[0].beginTurn(0);
+            playerTurns[0].showTable();
+            playerTurns[0].readyToBegin();
             this.Hide();
         }
 
@@ -432,57 +454,111 @@ namespace MonopolyDeal
                 MainWindow.playerTurns[player].button3.Width = 8 * totalWidth / 64;
                 MainWindow.playerTurns[player].button3.Height = 6 * totalHeight / 96;
                 MainWindow.playerTurns[player].button3.Margin = new Thickness(34 * totalWidth / 96, 37 * totalHeight / 96, 0, 0);
+                MainWindow.playerTurns[player].universalPrompt.Width = 46 * totalWidth / 96;
+                MainWindow.playerTurns[player].universalPrompt.Height = 46 * totalHeight / 96;
+                MainWindow.playerTurns[player].universalPrompt.Margin = new Thickness(48 * totalWidth / 96, totalHeight / 96, 0, 0);
 
                 int otherPlayers = 0;
-                for (int playerNum = 0; playerNum < MainWindow.numOfPlayers; playerNum++)
+                for (int player2 = 0; player2 < MainWindow.numOfPlayers; player2++)
                 {
                     double otherBoxWidth = totalWidth / ((MainWindow.numOfPlayers - 1) * 2 + 1);
                     otherBoxWidth = Math.Min(otherBoxWidth, boxWidth);
                     double otherBoxHeight = totalHeight / 4;
                     double otherMargin = (totalWidth - otherBoxWidth * 2 * (MainWindow.numOfPlayers - 1)) / (3 * (MainWindow.numOfPlayers - 1));
-                    if (playerNum != player)
+                    if (player2 != player)
                     {
-                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTable_Properties[player][playerNum]);
-                        MainWindow.otherTable_Properties[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherTable_Properties[player][playerNum].Height = otherBoxHeight;
-                        MainWindow.otherTable_Properties[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherTable_Properties[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherTable_Properties[player][playerNum].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 5 * totalHeight / 8, 0, 0);
-                        MainWindow.otherTable_Properties[player][playerNum].Name = MainWindow.playerNames[playerNum];
-                        //MainWindow.otherTable_Properties[player][playerNum].MouseDoubleClick += MainWindow.playerTurns[MainWindow.playerNum].OtherPlayer_Properties_MouseDoubleClick;
-                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTable_Money[player][playerNum]);
-                        MainWindow.otherTable_Money[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherTable_Money[player][playerNum].Height = otherBoxHeight;
-                        MainWindow.otherTable_Money[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherTable_Money[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherTable_Money[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 5 * totalHeight / 8, 0, 0);
-                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherNames[player][playerNum]);
-                        MainWindow.otherNames[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherNames[player][playerNum].Width = 2 * otherBoxWidth + otherMargin;
-                        MainWindow.otherNames[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherNames[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherNames[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 50 * totalHeight / 96, 0, 0);
-                        MainWindow.otherNames[player][playerNum].Content = MainWindow.playerNames[playerNum];
-                        MainWindow.otherNames[player][playerNum].HorizontalContentAlignment = HorizontalAlignment.Center;
-                        MainWindow.otherNames[player][playerNum].VerticalContentAlignment = VerticalAlignment.Center;
-                        MainWindow.otherNames[player][playerNum].Background = Brushes.DarkRed;
-                        //MainWindow.otherNames[player][playerNum].Click += MainWindow.playerTurns[MainWindow.playerNum].OtherPlayer_Click;
-                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherMoneyLabels[player][playerNum]);
-                        MainWindow.otherMoneyLabels[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherMoneyLabels[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherMoneyLabels[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherMoneyLabels[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherMoneyLabels[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 55 * totalHeight / 96, 0, 0);
-                        MainWindow.otherMoneyLabels[player][playerNum].Text = "Money:";
-                        MainWindow.otherMoneyLabels[player][playerNum].TextAlignment = TextAlignment.Center;
-                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherPropertyLabels[player][playerNum]);
-                        MainWindow.otherPropertyLabels[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherPropertyLabels[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherPropertyLabels[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherPropertyLabels[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherPropertyLabels[player][playerNum].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 55 * totalHeight / 96, 0, 0);
-                        MainWindow.otherPropertyLabels[player][playerNum].Text = "Properties:";
-                        MainWindow.otherPropertyLabels[player][playerNum].TextAlignment = TextAlignment.Center;
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTable_Properties[player][player2]);
+                        MainWindow.otherTable_Properties[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherTable_Properties[player][player2].Height = otherBoxHeight;
+                        MainWindow.otherTable_Properties[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherTable_Properties[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherTable_Properties[player][player2].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 5 * totalHeight / 8, 0, 0);
+                        MainWindow.otherTable_Properties[player][player2].Name = MainWindow.playerNames[player2];
+                        //MainWindow.otherTable_Properties[player][player2].MouseDoubleClick += MainWindow.playerTurns[MainWindow.player2].OtherPlayer_Properties_MouseDoubleClick;
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTable_Money[player][player2]);
+                        MainWindow.otherTable_Money[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherTable_Money[player][player2].Height = otherBoxHeight;
+                        MainWindow.otherTable_Money[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherTable_Money[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherTable_Money[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 5 * totalHeight / 8, 0, 0);
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherNames[player][player2]);
+                        MainWindow.otherNames[player][player2].Height = 5* totalHeight / 96;
+                        MainWindow.otherNames[player][player2].Width = otherBoxWidth;//2 * otherBoxWidth + otherMargin;
+                        MainWindow.otherNames[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherNames[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherNames[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.5) + otherBoxWidth * (2*otherPlayers+0.5), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherNames[player][player2].Content = MainWindow.playerNames[player2];
+                        MainWindow.otherNames[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherNames[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherNames[player][player2].Background = Brushes.DarkRed;
+                        //MainWindow.otherNames[player][player2].Click += MainWindow.playerTurns[MainWindow.player2].OtherPlayer_Click;
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherMoneyLabels[player][player2]);
+                        MainWindow.otherMoneyLabels[player][player2].Height = totalHeight / 24;
+                        MainWindow.otherMoneyLabels[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherMoneyLabels[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherMoneyLabels[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherMoneyLabels[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 55 * totalHeight / 96, 0, 0);
+                        MainWindow.otherMoneyLabels[player][player2].Text = "Money:";
+                        MainWindow.otherMoneyLabels[player][player2].TextAlignment = TextAlignment.Center;
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherPropertyLabels[player][player2]);
+                        MainWindow.otherPropertyLabels[player][player2].Height = totalHeight / 24;
+                        MainWindow.otherPropertyLabels[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherPropertyLabels[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherPropertyLabels[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherPropertyLabels[player][player2].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 55 * totalHeight / 96, 0, 0);
+                        MainWindow.otherPropertyLabels[player][player2].Text = "Properties:";
+                        MainWindow.otherPropertyLabels[player][player2].TextAlignment = TextAlignment.Center;
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherCardsLeft[player][player2]);
+                        MainWindow.otherCardsLeft[player][player2].Height = 5*totalHeight/96;
+                        MainWindow.otherCardsLeft[player][player2].Width = (otherBoxWidth + otherMargin) / 6;
+                        MainWindow.otherCardsLeft[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.333333) + otherBoxWidth *(2* otherPlayers+0.33333), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherCardsLeft[player][player2].Text = MainWindow.AllHands[player2].Count().ToString();
+                        MainWindow.otherCardsLeft[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherCardsLeft[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherCardsLeft[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherCardsLeft[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherCardsLeft[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherCardsLeft[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherCardsLeftText[player][player2]);
+                        MainWindow.otherCardsLeftText[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherCardsLeftText[player][player2].Width = (otherBoxWidth + otherMargin) / 3;
+                        MainWindow.otherCardsLeftText[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + otherBoxWidth * (2 * otherPlayers ), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherCardsLeftText[player][player2].Text = "Cards in Hand:";
+                        MainWindow.otherCardsLeftText[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherCardsLeftText[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherCardsLeftText[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherCardsLeftText[player][player2].HorizontalContentAlignment = HorizontalAlignment.Right;
+                        MainWindow.otherCardsLeftText[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherCardsLeftText[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTurnsLeftText[player][player2]);
+                        MainWindow.otherTurnsLeftText[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherTurnsLeftText[player][player2].Width = (otherBoxWidth + otherMargin) / 3;
+                        MainWindow.otherTurnsLeftText[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.5) + otherBoxWidth * (2 * otherPlayers +1.5), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherTurnsLeftText[player][player2].Text = "Turns Left:";
+                        MainWindow.otherTurnsLeftText[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherTurnsLeftText[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherTurnsLeftText[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherTurnsLeftText[player][player2].HorizontalContentAlignment = HorizontalAlignment.Right;
+                        MainWindow.otherTurnsLeftText[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeftText[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.playerTurns[player].grid.Children.Add(MainWindow.otherTurnsLeft[player][player2]);
+                        MainWindow.otherTurnsLeft[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherTurnsLeft[player][player2].Width = (otherBoxWidth + otherMargin) / 6;
+                        MainWindow.otherTurnsLeft[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.86667) + otherBoxWidth * (2 * otherPlayers + 1.866667), 49 * totalHeight / 96, 0, 0);
+                        if (player2 == MainWindow.playerNum)
+                        {
+                            MainWindow.otherTurnsLeft[player][player2].Text = MainWindow.playNum.ToString();
+                        }
+                        else //Someone else
+                        {
+                            MainWindow.otherTurnsLeft[player][player2].Text = "0";
+                        }
+                        MainWindow.otherTurnsLeft[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherTurnsLeft[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherTurnsLeft[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherTurnsLeft[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherTurnsLeft[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeft[player][player2].Padding = new Thickness(0, 0, 0, 0);
                         otherPlayers++;
                     }
                 }
@@ -545,50 +621,100 @@ namespace MonopolyDeal
                 MainWindow.playerTurns[player].button3.Width = 8 * totalWidth / 64;
                 MainWindow.playerTurns[player].button3.Height = 6 * totalHeight / 96;
                 MainWindow.playerTurns[player].button3.Margin = new Thickness(34 * totalWidth / 96, 37 * totalHeight / 96, 0, 0);
+                MainWindow.playerTurns[player].universalPrompt.Width = 46 * totalWidth / 96;
+                MainWindow.playerTurns[player].universalPrompt.Height = 46 * totalHeight / 96;
+                MainWindow.playerTurns[player].universalPrompt.Margin = new Thickness(48 * totalWidth / 96, totalHeight / 96, 0, 0);
 
                 int otherPlayers = 0;
-                for (int playerNum = 0; playerNum < MainWindow.numOfPlayers; playerNum++)
+                for (int player2 = 0; player2 < MainWindow.numOfPlayers; player2++)
                 {
                     double otherBoxWidth = totalWidth / ((MainWindow.numOfPlayers - 1) * 2 + 1);
                     otherBoxWidth = Math.Min(otherBoxWidth, boxWidth);
                     double otherBoxHeight = totalHeight / 4;
                     double otherMargin = (totalWidth - otherBoxWidth * 2 * (MainWindow.numOfPlayers - 1)) / (3 * (MainWindow.numOfPlayers - 1));
-                    if (playerNum != player)
+                    if (player2 != player)
                     {
-                        MainWindow.otherTable_Properties[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherTable_Properties[player][playerNum].Height = otherBoxHeight;
-                        MainWindow.otherTable_Properties[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherTable_Properties[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherTable_Properties[player][playerNum].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 5 * totalHeight / 8, 0, 0);
-                        MainWindow.otherTable_Properties[player][playerNum].Name = MainWindow.playerNames[playerNum];
-                        MainWindow.otherTable_Money[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherTable_Money[player][playerNum].Height = otherBoxHeight;
-                        MainWindow.otherTable_Money[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherTable_Money[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherTable_Money[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 5 * totalHeight / 8, 0, 0);
-                        MainWindow.otherNames[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherNames[player][playerNum].Width = 2 * otherBoxWidth + otherMargin;
-                        MainWindow.otherNames[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherNames[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherNames[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 50 * totalHeight / 96, 0, 0);
-                        MainWindow.otherNames[player][playerNum].Content = MainWindow.playerNames[playerNum];
-                        MainWindow.otherNames[player][playerNum].HorizontalContentAlignment = HorizontalAlignment.Center;
-                        MainWindow.otherNames[player][playerNum].VerticalContentAlignment = VerticalAlignment.Center;
-                        MainWindow.otherNames[player][playerNum].Background = Brushes.DarkRed;
-                        MainWindow.otherMoneyLabels[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherMoneyLabels[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherMoneyLabels[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherMoneyLabels[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherMoneyLabels[player][playerNum].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 55 * totalHeight / 96, 0, 0);
-                        MainWindow.otherMoneyLabels[player][playerNum].Text = "Money:";
-                        MainWindow.otherMoneyLabels[player][playerNum].TextAlignment = TextAlignment.Center;
-                        MainWindow.otherPropertyLabels[player][playerNum].Height = totalHeight / 24;
-                        MainWindow.otherPropertyLabels[player][playerNum].Width = otherBoxWidth;
-                        MainWindow.otherPropertyLabels[player][playerNum].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        MainWindow.otherPropertyLabels[player][playerNum].VerticalAlignment = System.Windows.VerticalAlignment.Top;
-                        MainWindow.otherPropertyLabels[player][playerNum].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 55 * totalHeight / 96, 0, 0);
-                        MainWindow.otherPropertyLabels[player][playerNum].Text = "Properties:";
-                        MainWindow.otherPropertyLabels[player][playerNum].TextAlignment = TextAlignment.Center;
+                        MainWindow.otherTable_Properties[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherTable_Properties[player][player2].Height = otherBoxHeight;
+                        MainWindow.otherTable_Properties[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherTable_Properties[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherTable_Properties[player][player2].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 5 * totalHeight / 8, 0, 0);
+                        MainWindow.otherTable_Properties[player][player2].Name = MainWindow.playerNames[player2];
+                        MainWindow.otherTable_Money[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherTable_Money[player][player2].Height = otherBoxHeight;
+                        MainWindow.otherTable_Money[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherTable_Money[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherTable_Money[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 5 * totalHeight / 8, 0, 0);
+                        MainWindow.otherNames[player][player2].Height = totalHeight / 24;
+                        MainWindow.otherNames[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherNames[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherNames[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherNames[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.5) + otherBoxWidth * (2 * otherPlayers + 0.5), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherNames[player][player2].Content = MainWindow.playerNames[player2];
+                        MainWindow.otherNames[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherNames[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherNames[player][player2].Background = Brushes.DarkRed;
+                        MainWindow.otherMoneyLabels[player][player2].Height = totalHeight / 24;
+                        MainWindow.otherMoneyLabels[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherMoneyLabels[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherMoneyLabels[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherMoneyLabels[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + 2 * otherBoxWidth * otherPlayers, 55 * totalHeight / 96, 0, 0);
+                        MainWindow.otherMoneyLabels[player][player2].Text = "Money:";
+                        MainWindow.otherMoneyLabels[player][player2].TextAlignment = TextAlignment.Center;
+                        MainWindow.otherPropertyLabels[player][player2].Height = totalHeight / 24;
+                        MainWindow.otherPropertyLabels[player][player2].Width = otherBoxWidth;
+                        MainWindow.otherPropertyLabels[player][player2].HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                        MainWindow.otherPropertyLabels[player][player2].VerticalAlignment = System.Windows.VerticalAlignment.Top;
+                        MainWindow.otherPropertyLabels[player][player2].Margin = new Thickness(otherMargin * (2 + 3 * otherPlayers) + otherBoxWidth * (2 * otherPlayers + 1), 55 * totalHeight / 96, 0, 0);
+                        MainWindow.otherPropertyLabels[player][player2].Text = "Properties:";
+                        MainWindow.otherPropertyLabels[player][player2].TextAlignment = TextAlignment.Center;
+                        MainWindow.otherCardsLeft[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherCardsLeft[player][player2].Width = (otherBoxWidth + otherMargin) / 6;
+                        MainWindow.otherCardsLeft[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.333333) + otherBoxWidth * (2 * otherPlayers + 0.33333), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherCardsLeft[player][player2].Text = MainWindow.AllHands[player2].Count().ToString();
+                        MainWindow.otherCardsLeft[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherCardsLeft[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherCardsLeft[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherCardsLeft[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherCardsLeft[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherCardsLeft[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherCardsLeftText[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherCardsLeftText[player][player2].Width = (otherBoxWidth + otherMargin) / 3;
+                        MainWindow.otherCardsLeftText[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1) + otherBoxWidth * (2 * otherPlayers), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherCardsLeftText[player][player2].Text = "Cards in Hand:";
+                        MainWindow.otherCardsLeftText[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherCardsLeftText[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherCardsLeftText[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherCardsLeftText[player][player2].HorizontalContentAlignment = HorizontalAlignment.Right;
+                        MainWindow.otherCardsLeftText[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherCardsLeftText[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeftText[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherTurnsLeftText[player][player2].Width = (otherBoxWidth + otherMargin) / 3;
+                        MainWindow.otherTurnsLeftText[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.5) + otherBoxWidth * (2 * otherPlayers + 1.5), 49 * totalHeight / 96, 0, 0);
+                        MainWindow.otherTurnsLeftText[player][player2].Text = "Turns Left:";
+                        MainWindow.otherTurnsLeftText[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherTurnsLeftText[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherTurnsLeftText[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherTurnsLeftText[player][player2].HorizontalContentAlignment = HorizontalAlignment.Right;
+                        MainWindow.otherTurnsLeftText[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeftText[player][player2].Padding = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeft[player][player2].Height = 5 * totalHeight / 96;
+                        MainWindow.otherTurnsLeft[player][player2].Width = (otherBoxWidth + otherMargin) / 6;
+                        MainWindow.otherTurnsLeft[player][player2].Margin = new Thickness(otherMargin * (3 * otherPlayers + 1.86667) + otherBoxWidth * (2 * otherPlayers + 1.866667), 49 * totalHeight / 96, 0, 0);
+                        if (player2 == MainWindow.playerNum)
+                        {
+                            MainWindow.otherTurnsLeft[player][player2].Text = MainWindow.playNum.ToString();
+                        }
+                        else //Someone else
+                        {
+                            MainWindow.otherTurnsLeft[player][player2].Text = "0";
+                        }
+                        MainWindow.otherTurnsLeft[player][player2].VerticalAlignment = VerticalAlignment.Top;
+                        MainWindow.otherTurnsLeft[player][player2].HorizontalAlignment = HorizontalAlignment.Left;
+                        MainWindow.otherTurnsLeft[player][player2].VerticalContentAlignment = VerticalAlignment.Center;
+                        MainWindow.otherTurnsLeft[player][player2].HorizontalContentAlignment = HorizontalAlignment.Center;
+                        MainWindow.otherTurnsLeft[player][player2].BorderThickness = new Thickness(0, 0, 0, 0);
+                        MainWindow.otherTurnsLeft[player][player2].Padding = new Thickness(0, 0, 0, 0);
                         otherPlayers++;
                     }
                 }
@@ -705,7 +831,7 @@ namespace MonopolyDeal
                     return CardType.Action;
                 case Card.RentPinkOrange__1:
                     return CardType.Action;
-                case Card.RentBlackLime__1:
+                case Card.RentBlackUtility__1:
                     return CardType.Action;
                 case Card.PropertyYellow__3:
                     return CardType.Property;
@@ -723,7 +849,7 @@ namespace MonopolyDeal
                     return CardType.Property;
                 case Card.PropertyBrown__1:
                     return CardType.Property;
-                case Card.PropertyLime__1:
+                case Card.PropertyUtility__1:
                     return CardType.Property;
                 case Card.PropertyBlue__4:
                     return CardType.Property;
@@ -735,7 +861,7 @@ namespace MonopolyDeal
                     return CardType.Property;
                 case Card.PropertyLightBlueBlack__4:
                     return CardType.Property;
-                case Card.PropertyLimeBlack__2:
+                case Card.PropertyUtilityBlack__2:
                     return CardType.Property;
                 case Card.PropertyBrownLightBlue__1:
                     return CardType.Property;
@@ -767,7 +893,7 @@ namespace MonopolyDeal
                     return PropertyType.Normal;
                 case Card.PropertyBrown__1:
                     return PropertyType.Normal;
-                case Card.PropertyLime__1:
+                case Card.PropertyUtility__1:
                     return PropertyType.Normal;
                 case Card.PropertyBlue__4:
                     return PropertyType.Normal;
@@ -783,9 +909,9 @@ namespace MonopolyDeal
                     return PropertyType.Duo;
                 case Card.PropertyBlackLightBlue__4:
                     return PropertyType.Duo;
-                case Card.PropertyLimeBlack__2:
+                case Card.PropertyUtilityBlack__2:
                     return PropertyType.Duo;
-                case Card.PropertyBlackLime__2:
+                case Card.PropertyBlackUtility__2:
                     return PropertyType.Duo;
                 case Card.PropertyBrownLightBlue__1:
                     return PropertyType.Duo;
@@ -803,7 +929,7 @@ namespace MonopolyDeal
                     return PropertyType.Wild;
                 case Card.PropertyWildBrown:
                     return PropertyType.Wild;
-                case Card.PropertyWildLime:
+                case Card.PropertyWildUtility:
                     return PropertyType.Wild;
                 case Card.PropertyWildBlue:
                     return PropertyType.Wild;
@@ -871,7 +997,7 @@ namespace MonopolyDeal
                     return 1;
                 case Card.RentPinkOrange__1:
                     return 1;
-                case Card.RentBlackLime__1:
+                case Card.RentBlackUtility__1:
                     return 1;
                 case Card.PropertyYellow__3:
                     return 3;
@@ -889,7 +1015,7 @@ namespace MonopolyDeal
                     return 2;
                 case Card.PropertyBrown__1:
                     return 1;
-                case Card.PropertyLime__1:
+                case Card.PropertyUtility__1:
                     return 1;
                 case Card.PropertyBlue__4:
                     return 4;
@@ -907,9 +1033,9 @@ namespace MonopolyDeal
                     return 4;
                 case Card.PropertyBlackLightBlue__4:
                     return 4;
-                case Card.PropertyLimeBlack__2:
+                case Card.PropertyUtilityBlack__2:
                     return 2;
-                case Card.PropertyBlackLime__2:
+                case Card.PropertyBlackUtility__2:
                     return 2;
                 case Card.PropertyBrownLightBlue__1:
                     return 1;
@@ -925,7 +1051,7 @@ namespace MonopolyDeal
                     return 4;
                 case Card.PropertyWildBrown:
                     return 0;
-                case Card.PropertyWildLime:
+                case Card.PropertyWildUtility:
                     return 0;
                 case Card.PropertyWildBlue:
                     return 0;
@@ -947,7 +1073,7 @@ namespace MonopolyDeal
             return 0;
         }
 
-        //[brown,lime,blue,lightblue,pink,orange,red,yellow,green,black]
+        //[brown,utility,blue,lightblue,pink,orange,red,yellow,green,black]
         public static int getPropertyIndex(Card card)
         {
             switch (card)
@@ -958,11 +1084,11 @@ namespace MonopolyDeal
                     return 0;
                 case Card.PropertyWildBrown:
                     return 0;
-                case Card.PropertyLime__1:
+                case Card.PropertyUtility__1:
                     return 1;
-                case Card.PropertyLimeBlack__2:
+                case Card.PropertyUtilityBlack__2:
                     return 1;
-                case Card.PropertyWildLime:
+                case Card.PropertyWildUtility:
                     return 1;
                 case Card.PropertyBlue__4:
                     return 2;
@@ -1016,7 +1142,7 @@ namespace MonopolyDeal
                     return 9;
                 case Card.PropertyBlackLightBlue__4:
                     return 9;
-                case Card.PropertyBlackLime__2:
+                case Card.PropertyBlackUtility__2:
                     return 9;
                 case Card.PropertyWildBlack:
                     return 9;
@@ -1320,7 +1446,7 @@ namespace MonopolyDeal
                 MainWindow.playerTurns[player].button2.Visibility = Visibility.Hidden;
                 MainWindow.playerTurns[player].button3.Visibility = Visibility.Hidden;
                 MainWindow.playerTurns[player].buttonBack.Visibility = Visibility.Hidden;
-                MainWindow.playerTurns[player].Prompt.Content = "Player " + MainWindow.playerNum + " won the game!  Get rocked!";
+                MainWindow.playerTurns[player].Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + " won the game!  Get rocked!";
             }
             MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = "You won!!! Congratulations!";
         }
@@ -1572,7 +1698,7 @@ namespace MonopolyDeal
             }
         }
 
-        public static void OtherPlayer_Properties_MouseDoubleClick(object sender, RoutedEventArgs e)
+        public static void OtherPlayer_Properties_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ListBox copySender = (ListBox)sender;
             int playerClicked = MainWindow.otherTable_Properties[MainWindow.playerNum].IndexOf(copySender);

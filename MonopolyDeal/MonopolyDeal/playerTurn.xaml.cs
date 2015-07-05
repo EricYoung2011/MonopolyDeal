@@ -35,16 +35,17 @@ namespace MonopolyDeal
 
         public void beginTurn(int player)
         {
-            
             MainWindow.playNum = 0;
             MainWindow.stage = MainWindow.turnStage.begin;
-            setupEvents(MainWindow.playerNum);
+            setupEvents(player);
+            updateUniversalPrompt(MainWindow.playerNames[player] + " began his turn");
             if (MainWindow.AllHands[MainWindow.playerNum].Count > 0)
             {
                 drawCards(2);
             }
             else
             {
+                updateUniversalPrompt(player.ToString() + " got to draw 5 cards this turn.");
                 drawCards(5);
             }
             showTable();
@@ -141,6 +142,15 @@ namespace MonopolyDeal
                     MainWindow.otherTable_Properties[player][otherPlayer].Items.Clear();
                     if (otherPlayer != player)
                     {
+                        MainWindow.otherCardsLeft[player][otherPlayer].Text = MainWindow.AllHands[otherPlayer].Count().ToString();
+                        if (otherPlayer == MainWindow.playerNum)
+                        {
+                            MainWindow.otherTurnsLeft[player][otherPlayer].Text = (3-MainWindow.playNum).ToString();
+                        }
+                        else
+                        {
+                            MainWindow.otherTurnsLeft[player][otherPlayer].Text = "0";
+                        }
                         foreach (Card card in MainWindow.AllTableMoney[otherPlayer])
                         {
                             MainWindow.otherTable_Money[player][otherPlayer].Items.Add(card);
@@ -154,6 +164,15 @@ namespace MonopolyDeal
                         }
                     }
                 }
+            }
+        }
+
+        public void updateUniversalPrompt(string toDisplay)
+        {
+            for (int player = 0; player < MainWindow.numOfPlayers; player++)
+            {
+                MainWindow.playerTurns[player].universalPrompt.Text += toDisplay + Environment.NewLine;
+                MainWindow.playerTurns[player].universalPrompt.ScrollToEnd();
             }
         }
 
@@ -180,7 +199,7 @@ namespace MonopolyDeal
             MainWindow.stage = MainWindow.turnStage.decidePlayType;
             MainWindow.doublePlayed = false;
             MainWindow.doublePlayed2 = false;
-            Prompt.Content = "Player " + (MainWindow.playerNum + 1) + ", what would you like to do?";
+            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + ", what would you like to do?";
             if (MainWindow.playNum < 3)
             {
                 turnsLeftDisplay.Content = (3 - MainWindow.playNum);
@@ -245,10 +264,12 @@ namespace MonopolyDeal
 
         public void playCardAsMoney()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played a " + MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum].ToString() + " as money");
             MainWindow.AllTableMoney[MainWindow.playerNum].Add(MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum]);
             MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
             showTable();
             MainWindow.playNum++;
+            showTable();
             decidePlayType();
         }
 
@@ -286,8 +307,8 @@ namespace MonopolyDeal
                     playRentWild();
                     break;
 
-                case Card.RentBlackLime__1:
-                    MainWindow.rentCard = Card.RentBlackLime__1;
+                case Card.RentBlackUtility__1:
+                    MainWindow.rentCard = Card.RentBlackUtility__1;
                     playRent();
                     break;
 
@@ -323,7 +344,7 @@ namespace MonopolyDeal
 
         public void finishPlayAction()
         {
-            //MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
+            MainWindow.justSayNos = 0;
             MainWindow.checkProperties();
             showTable();
             setupEvents(MainWindow.playerNum);
@@ -338,6 +359,7 @@ namespace MonopolyDeal
                 {
                     MainWindow.playNum++;
                 }
+                showTable();
                 decidePlayType();
             }
             else //Still waiting for other players to pay
@@ -376,7 +398,7 @@ namespace MonopolyDeal
                     button2.Content = "Light Blue";
                     button2.Visibility = System.Windows.Visibility.Visible;
                     return;
-                case Card.PropertyBlackLime__2:
+                case Card.PropertyBlackUtility__2:
                     button1.Content = "Black";
                     button1.Visibility = System.Windows.Visibility.Visible;
                     button2.Content = "Utilities";
@@ -418,7 +440,7 @@ namespace MonopolyDeal
                     button2.Content = "Light Blue";
                     button2.Visibility = System.Windows.Visibility.Visible;
                     return;
-                case Card.PropertyLimeBlack__2:
+                case Card.PropertyUtilityBlack__2:
                     button1.Content = "Black";
                     button1.Visibility = System.Windows.Visibility.Visible;
                     button2.Content = "Utilities";
@@ -467,6 +489,7 @@ namespace MonopolyDeal
 
         public void playCardAsProperty()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played a " + MainWindow.propertyCard.ToString());
             if (MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].Count >= MainWindow.monopolyPropsNeeded[MainWindow.propIndex])
             {
                 MainWindow.AllTableProperties[MainWindow.playerNum][10].Add(MainWindow.propertyCard);
@@ -476,8 +499,8 @@ namespace MonopolyDeal
                 MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].Add(MainWindow.propertyCard);
             }
             MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
-            showTable();
             MainWindow.playNum++;
+            showTable();
             decidePlayType();
         }
 
@@ -584,7 +607,7 @@ namespace MonopolyDeal
                         button1.Content = "Light Blue";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         return;
-                    case Card.PropertyBlackLime__2:
+                    case Card.PropertyBlackUtility__2:
                         button1.Content = "Utilities";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         return;
@@ -612,7 +635,7 @@ namespace MonopolyDeal
                         button1.Content = "Brown";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         return;
-                    case Card.PropertyLimeBlack__2:
+                    case Card.PropertyUtilityBlack__2:
                         button1.Content = "Black";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         return;
@@ -746,6 +769,7 @@ namespace MonopolyDeal
 
         public void finishMoveCard()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " moved a " + MainWindow.propertyCard.ToString());
             if (MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex2].Count >= MainWindow.monopolyPropsNeeded[MainWindow.propIndex2])
             {
                 foreach (Card card in MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex2])
@@ -794,6 +818,7 @@ namespace MonopolyDeal
 
         public void discardCard()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " discarded a " + MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum].ToString());
             MainWindow.playNum = 4;
             MainWindow.deckDiscard.Add(MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum]);
             MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
@@ -814,6 +839,7 @@ namespace MonopolyDeal
             }
             else
             {
+                updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " ended his turn");
                 //MainWindow.playerTurns[MainWindow.playerNum].window.WindowState = System.Windows.WindowState.Minimized;
                 MainWindow.playerNum++;
                 if (MainWindow.playerNum == MainWindow.numOfPlayers)
@@ -822,7 +848,7 @@ namespace MonopolyDeal
                 }
                 for (int player = 0; player < MainWindow.numOfPlayers; player++)
                 {
-                    MainWindow.playerTurns[player].Prompt.Content = "Player " + (MainWindow.playerNum + 1) + "'s turn...";
+                    MainWindow.playerTurns[player].Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
                 }
                 button1.Visibility = System.Windows.Visibility.Hidden;
                 button2.Visibility = System.Windows.Visibility.Hidden;
@@ -999,6 +1025,7 @@ namespace MonopolyDeal
                     color = "Black";
                     break;
             }
+            MainWindow.propColor = color;
             Prompt.Content = "Play House on " + color + " properties?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
@@ -1009,6 +1036,7 @@ namespace MonopolyDeal
 
         public void house()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played a House on his " + MainWindow.propColor + " properties");
             MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].Add(Card.House__3);
             MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
             showTable();
@@ -1164,6 +1192,7 @@ namespace MonopolyDeal
                     color = "Black";
                     break;
             }
+            MainWindow.propColor = color;
             Prompt.Content = "Play Hotel on " + color + " properties?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
@@ -1174,6 +1203,7 @@ namespace MonopolyDeal
 
         public void hotel()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played a Hotel on his " + MainWindow.propColor + " properties");
             MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].Add(Card.House__3);
             MainWindow.AllHands[MainWindow.playerNum].RemoveAt(MainWindow.cardNum);
             showTable();
@@ -1196,6 +1226,16 @@ namespace MonopolyDeal
 
         public void collectBirthday()
         {
+            int month = DateTime.Now.Month;
+            int day = DateTime.Now.Day;
+            if ((month == 1) && (day == 12) && (MainWindow.playerNames[MainWindow.playerNum] != "Eric"))
+            {
+                updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played It's My Birthday!  Even though it's Eric's birthday... Kinda messed up really. Dirty filthy liar...");
+            }
+            else
+            {
+                updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played It's My Birthday!");
+            }
             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.Birthday__2);
             MainWindow.playedCard = Card.Birthday__2;
             showTable();
@@ -1234,7 +1274,7 @@ namespace MonopolyDeal
 
         public void checkDebtCollector()
         {
-            Prompt.Content = "Debt Collect Player " + (MainWindow.chosenPlayer + 1) + "?";
+            Prompt.Content = "Debt Collect " + MainWindow.playerNames[MainWindow.chosenPlayer] + "?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
             button2.Content = "No";
@@ -1245,6 +1285,7 @@ namespace MonopolyDeal
 
         public void debtCollect()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " Debt Collected " + MainWindow.playerNames[MainWindow.chosenPlayer]);
             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.DebtCollector__3);
             MainWindow.playedCard = Card.DebtCollector__3;
             showTable();
@@ -1284,7 +1325,7 @@ namespace MonopolyDeal
 
         public void checkRentWild()
         {
-            Prompt.Content = "Charge Player " + (MainWindow.chosenPlayer + 1) + ", $" + MainWindow.payment + " in rent?";
+            Prompt.Content = "Charge " + MainWindow.playerNames[MainWindow.chosenPlayer] + " $" + MainWindow.payment + " in rent?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
             button2.Content = "No";
@@ -1295,6 +1336,7 @@ namespace MonopolyDeal
 
         public void rentWild()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " charged " + MainWindow.playerNames[MainWindow.chosenPlayer]+ " $" + MainWindow.payment + " in rent");
             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.RentWild__3);
             if (MainWindow.doublePlayed)
             {
@@ -1303,6 +1345,14 @@ namespace MonopolyDeal
             if (MainWindow.doublePlayed2)
             {
                 MainWindow.AllHands[MainWindow.playerNum].Remove(Card.DoubleTheRent__1);
+            }
+            if (MainWindow.doublePlayed2)
+            {
+                updateUniversalPrompt("(DOUBLED the doubled rent...)");
+            }
+            else if (MainWindow.doublePlayed)
+            {
+                updateUniversalPrompt("(Doubled the rent...)");
             }
             MainWindow.playedCard = Card.RentWild__3;
             MainWindow.hasBeenRented[MainWindow.playerNum][MainWindow.propIndex] = true;
@@ -1325,7 +1375,7 @@ namespace MonopolyDeal
             Prompt.Content = "Choose a property to rent.";
             switch (MainWindow.rentCard)
             {
-                case Card.RentBlackLime__1:
+                case Card.RentBlackUtility__1:
                     if (MainWindow.AllTableProperties[MainWindow.playerNum][9].Count > 0)
                     {
                         button1.Content = "Black";
@@ -1442,6 +1492,23 @@ namespace MonopolyDeal
 
         public void rent()
         {
+            if (MainWindow.payment == 60)
+            {
+                updateUniversalPrompt("I don't believe it... Either I glitched, or IT happened...");
+            }
+            else if (MainWindow.payment >= 20)
+            {
+                updateUniversalPrompt("Hot damn...");
+            }
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " charged everyone $" + MainWindow.payment + "in rent");
+            if (MainWindow.doublePlayed2)
+            {
+                updateUniversalPrompt("(DOUBLED the doubled rent...)");
+            }
+            else if (MainWindow.doublePlayed)
+            {
+                updateUniversalPrompt("(Doubled the rent...)");
+            }
             MainWindow.AllHands[MainWindow.playerNum].Remove(MainWindow.rentCard);
             MainWindow.playedCard = Card.Rent;
             MainWindow.hasBeenRented[MainWindow.playerNum][MainWindow.propIndex] = true;
@@ -1545,7 +1612,7 @@ namespace MonopolyDeal
                     MainWindow.cardNum2 = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2].IndexOf(MainWindow.propertyCard);
                 }
             }
-            Prompt.Content = "Trade your " + MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex][MainWindow.cardNum] + " for Player " + (MainWindow.chosenPlayer+1) + "'s " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2][MainWindow.cardNum2] + "?";
+            Prompt.Content = "Trade your " + MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex][MainWindow.cardNum] + " for " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2][MainWindow.cardNum2] + "?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
             button2.Content = "No";
@@ -1560,6 +1627,7 @@ namespace MonopolyDeal
 
         public void forcedDeal()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " Forced-Dealing his " + MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex][MainWindow.cardNum] + " for " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2][MainWindow.cardNum2]);
             MainWindow.playedCard = Card.ForcedDeal__3;
             MainWindow.playerTurns[MainWindow.chosenPlayer].acknowledgeAttack();
         }
@@ -1605,7 +1673,7 @@ namespace MonopolyDeal
                     MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
                 }
             }
-            Prompt.Content = "Sly Deal " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex][MainWindow.cardNum] + " from Player " + (MainWindow.chosenPlayer + 1) + "?";
+            Prompt.Content = "Sly Deal " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex][MainWindow.cardNum] + " from " + MainWindow.playerNames[MainWindow.chosenPlayer] + "?";
             button1.Content = "Yes";
             button1.Visibility = System.Windows.Visibility.Visible;
             button2.Content = "No";
@@ -1620,6 +1688,7 @@ namespace MonopolyDeal
 
         public void slyDeal()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " is Sly-Dealing " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s " + MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex][MainWindow.cardNum]);
             MainWindow.playedCard = Card.SlyDeal__3;
             MainWindow.playerTurns[MainWindow.chosenPlayer].acknowledgeAttack();
         }
@@ -1656,7 +1725,7 @@ namespace MonopolyDeal
             int numOfOptions = MainWindow.numOfMonopolies();
             if (numOfOptions == 0)
             {
-                Prompt.Content = "Player " + MainWindow.chosenPlayer + " has no Monopolies...";
+                Prompt.Content = MainWindow.playerNames[MainWindow.chosenPlayer] + " has no Monopolies...";
                 buttonBack.Visibility = System.Windows.Visibility.Visible;
             }
             if (numOfOptions > 0)
@@ -1702,6 +1771,7 @@ namespace MonopolyDeal
                                 break;
                         }
                         button1.Content = color;
+                        MainWindow.propColor = color;
                         button1.Visibility = System.Windows.Visibility.Visible;
                         break;
                     }
@@ -1758,6 +1828,7 @@ namespace MonopolyDeal
 
         public void dealBreak()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " is Deal-Breaking " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s " + MainWindow.propColor + " Monopoly");
             MainWindow.playedCard = Card.DealBreaker__5;
             MainWindow.playerTurns[MainWindow.chosenPlayer].acknowledgeAttack();
         }
@@ -1766,7 +1837,7 @@ namespace MonopolyDeal
         public void acknowledgeAttack()
         {
             MainWindow.stage = MainWindow.turnStage.acknowledgeAttack;
-            Prompt.Content = "Player " + (MainWindow.playerNum + 1) + " is ";
+            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + " is ";
             button1.Visibility = System.Windows.Visibility.Visible;
             button1.Content = "OK";
             button2.Visibility = System.Windows.Visibility.Hidden;
@@ -1854,7 +1925,7 @@ namespace MonopolyDeal
         {
             //MainWindow.stage = MainWindow.turnStage.makingPayment;
             setupEvents(MainWindow.chosenPlayer);
-            Prompt.Content = "Select cards totalling $" + MainWindow.payment + " to pay Player " + (MainWindow.playerNum + 1);
+            Prompt.Content = "Select cards totalling $" + MainWindow.payment + " to pay " + MainWindow.playerNames[MainWindow.playerNum];
             button1.Visibility = System.Windows.Visibility.Hidden;
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
@@ -1885,6 +1956,7 @@ namespace MonopolyDeal
 
         public void justSayNo()
         {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.chosenPlayer] + " Just Said No");
             MainWindow.AllHands[MainWindow.chosenPlayer].Remove(Card.JustSayNo__4);
             MainWindow.payersLeft.Remove(MainWindow.chosenPlayer);
             button1.Visibility = System.Windows.Visibility.Hidden;
@@ -1893,10 +1965,10 @@ namespace MonopolyDeal
             buttonBack.Visibility = System.Windows.Visibility.Hidden;
             //Table_Money.IsEnabled = false;
             //Table_Properties.IsEnabled = false;
-            Prompt.Content = "Player " + (MainWindow.playerNum + 1) + "'s turn...";
+            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
 
             //Wait for original player to acknowledge...
-            MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = (MainWindow.chosenPlayer + 1) + " played a Just Say No";
+            MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = MainWindow.playerNames[MainWindow.chosenPlayer] + " played a Just Say No";
             MainWindow.playerTurns[MainWindow.playerNum].button1.Content = "OK";
             MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Visible;
             if (MainWindow.AllHands[MainWindow.playerNum].Contains(Card.JustSayNo__4))
@@ -1904,6 +1976,62 @@ namespace MonopolyDeal
                 MainWindow.playerTurns[MainWindow.playerNum].button2.Content = "Just Say No";
                 MainWindow.playerTurns[MainWindow.playerNum].button2.Visibility = System.Windows.Visibility.Visible;
             }
+        }
+
+        public void justSayNoOwner()
+        {
+            updateUniversalPrompt(MainWindow.playerNames[MainWindow.chosenPlayer] + " Just Said No to " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s Just Say No!");
+            MainWindow.AllHands[MainWindow.playerNum].Remove(Card.JustSayNo__4);
+            MainWindow.playerTurns[MainWindow.chosenPlayer].Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "Just Said No to your Just Say No.  Get rocked...";
+            MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Content = "OK";
+            MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Visibility = System.Windows.Visibility.Visible;
+            MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Hidden;
+            if (MainWindow.AllHands[MainWindow.chosenPlayer].Contains(Card.JustSayNo__4))
+            {
+                MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Content = "Just Say No";
+                MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Visible;
+            }
+            MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Visibility = System.Windows.Visibility.Hidden;
+            MainWindow.playerTurns[MainWindow.chosenPlayer].buttonBack.Visibility = System.Windows.Visibility.Hidden;
+            button1.Visibility = System.Windows.Visibility.Hidden;
+            button2.Visibility = System.Windows.Visibility.Hidden;
+            button3.Visibility = System.Windows.Visibility.Hidden;
+            buttonBack.Visibility = System.Windows.Visibility.Hidden;
+            switch (MainWindow.playedCard)
+            {
+                case Card.Birthday__2:
+                    MainWindow.payersLeft.Add(MainWindow.chosenPlayer);
+                    foreach (int i in MainWindow.payersLeft)
+                    {
+                        Prompt.Content += MainWindow.playerNames[i] + ", ";
+                    }
+                    break;
+
+                case Card.Rent:
+                    foreach (int i in MainWindow.payersLeft)
+                    {
+                        Prompt.Content += MainWindow.playerNames[i] + ", ";
+                    }
+                    break;
+            }
+            return;
+        }
+
+        public void justSayNoAgain()
+        {
+            updateUniversalPrompt("GET ROCKED!!! " + MainWindow.playerNames[MainWindow.chosenPlayer] + " Just Said No to " + MainWindow.playerNames[MainWindow.playerNum] + " Just Saying No to " + MainWindow.playerNames[MainWindow.chosenPlayer] + "'s Just Say No!!!!");
+            MainWindow.AllHands[MainWindow.chosenPlayer].Remove(Card.JustSayNo__4);
+            MainWindow.payersLeft.Remove(MainWindow.chosenPlayer);
+            button1.Visibility = System.Windows.Visibility.Hidden;
+            button2.Visibility = System.Windows.Visibility.Hidden;
+            button3.Visibility = System.Windows.Visibility.Hidden;
+            buttonBack.Visibility = System.Windows.Visibility.Hidden;
+            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
+
+            //Wait for original player to acknowledge...
+            MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = MainWindow.playerNames[MainWindow.chosenPlayer] + "OOOOoooooooo!  It just happened!  He Just Said No, to your Just Say No, of his Just Say No!";
+            MainWindow.playerTurns[MainWindow.playerNum].button1.Content = "OK";
+            MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Visible;
         }
 
         public void receiveForcedDeal()
@@ -1942,7 +2070,7 @@ namespace MonopolyDeal
                         button2.Content = "Light Blue";
                         button2.Visibility = System.Windows.Visibility.Visible;
                         return;
-                    case Card.PropertyBlackLime__2:
+                    case Card.PropertyBlackUtility__2:
                         button1.Content = "Black";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         button2.Content = "Utilities";
@@ -1984,7 +2112,7 @@ namespace MonopolyDeal
                         button2.Content = "Light Blue";
                         button2.Visibility = System.Windows.Visibility.Visible;
                         return;
-                    case Card.PropertyLimeBlack__2:
+                    case Card.PropertyUtilityBlack__2:
                         button1.Content = "Black";
                         button1.Visibility = System.Windows.Visibility.Visible;
                         button2.Content = "Utilities";
@@ -2136,8 +2264,8 @@ namespace MonopolyDeal
                             MainWindow.propertyCard = Card.PropertyBlackLightBlue__4;
                             checkPlayCard();
                             return;
-                        case Card.PropertyBlackLime__2:
-                            MainWindow.propertyCard = Card.PropertyBlackLime__2;
+                        case Card.PropertyBlackUtility__2:
+                            MainWindow.propertyCard = Card.PropertyBlackUtility__2;
                             checkPlayCard();
                             return;
                         case Card.PropertyBlueGreen__4:
@@ -2164,8 +2292,8 @@ namespace MonopolyDeal
                             MainWindow.propertyCard = Card.PropertyBrownLightBlue__1;
                             checkPlayCard();
                             return;
-                        case Card.PropertyLimeBlack__2:
-                            MainWindow.propertyCard = Card.PropertyBlackLime__2;
+                        case Card.PropertyUtilityBlack__2:
+                            MainWindow.propertyCard = Card.PropertyBlackUtility__2;
                             checkPlayCard();
                             return;
                         case Card.PropertyOrangePink__2:
@@ -2213,7 +2341,7 @@ namespace MonopolyDeal
                                         MainWindow.propertyCard = Card.PropertyWildBrown;
                                         break;
                                     case 1:
-                                        MainWindow.propertyCard = Card.PropertyWildLime;
+                                        MainWindow.propertyCard = Card.PropertyWildUtility;
                                         break;
                                     case 2:
                                         MainWindow.propertyCard = Card.PropertyWildBlue;
@@ -2259,7 +2387,7 @@ namespace MonopolyDeal
                             MainWindow.propIndex2 = 3;
                             checkMoveCard();
                             return;
-                        case Card.PropertyBlackLime__2:
+                        case Card.PropertyBlackUtility__2:
                             MainWindow.propIndex2 = 1;
                             checkMoveCard();
                             return;
@@ -2287,7 +2415,7 @@ namespace MonopolyDeal
                             MainWindow.propIndex2 = 0;
                             checkMoveCard();
                             return;
-                        case Card.PropertyLimeBlack__2:
+                        case Card.PropertyUtilityBlack__2:
                             MainWindow.propIndex2 = 9;
                             checkMoveCard();
                             return;
@@ -2328,8 +2456,8 @@ namespace MonopolyDeal
                             case Card.PropertyBlackLightBlue__4:
                                 MainWindow.propertyCard = Card.PropertyLightBlueBlack__4;
                                 break;
-                            case Card.PropertyBlackLime__2:
-                                MainWindow.propertyCard = Card.PropertyLimeBlack__2;
+                            case Card.PropertyBlackUtility__2:
+                                MainWindow.propertyCard = Card.PropertyUtilityBlack__2;
                                 break;
                             case Card.PropertyBlueGreen__4:
                                 MainWindow.propertyCard = Card.PropertyGreenBlue__4;
@@ -2349,8 +2477,8 @@ namespace MonopolyDeal
                             case Card.PropertyLightBlueBrown__1:
                                 MainWindow.propertyCard = Card.PropertyBrownLightBlue__1;
                                 break;
-                            case Card.PropertyLimeBlack__2:
-                                MainWindow.propertyCard = Card.PropertyBlackLime__2;
+                            case Card.PropertyUtilityBlack__2:
+                                MainWindow.propertyCard = Card.PropertyBlackUtility__2;
                                 break;
                             case Card.PropertyOrangePink__2:
                                 MainWindow.propertyCard = Card.PropertyPinkOrange__2;
@@ -2374,7 +2502,7 @@ namespace MonopolyDeal
                                 MainWindow.propertyCard = Card.PropertyWildBrown;
                                 break;
                             case 1:
-                                MainWindow.propertyCard = Card.PropertyWildLime;
+                                MainWindow.propertyCard = Card.PropertyWildUtility;
                                 break;
                             case 2:
                                 MainWindow.propertyCard = Card.PropertyWildBlue;
@@ -2486,7 +2614,7 @@ namespace MonopolyDeal
                 case MainWindow.turnStage.rent:
                     switch (MainWindow.rentCard)
                     {
-                        case Card.RentBlackLime__1:
+                        case Card.RentBlackUtility__1:
                             MainWindow.propIndex = 9;
                             break;
 
@@ -2548,8 +2676,8 @@ namespace MonopolyDeal
                         case Card.PropertyBlackLightBlue__4:
                             MainWindow.propertyCard = Card.PropertyBlackLightBlue__4;
                             break;
-                        case Card.PropertyBlackLime__2:
-                            MainWindow.propertyCard = Card.PropertyBlackLime__2;
+                        case Card.PropertyBlackUtility__2:
+                            MainWindow.propertyCard = Card.PropertyBlackUtility__2;
                             break;
                         case Card.PropertyBlueGreen__4:
                             MainWindow.propertyCard = Card.PropertyBlueGreen__4;
@@ -2569,8 +2697,8 @@ namespace MonopolyDeal
                         case Card.PropertyLightBlueBrown__1:
                             MainWindow.propertyCard = Card.PropertyBrownLightBlue__1;
                             break;
-                        case Card.PropertyLimeBlack__2:
-                            MainWindow.propertyCard = Card.PropertyBlackLime__2;
+                        case Card.PropertyUtilityBlack__2:
+                            MainWindow.propertyCard = Card.PropertyBlackUtility__2;
                             break;
                         case Card.PropertyOrangePink__2:
                             MainWindow.propertyCard = Card.PropertyOrangePink__2;
@@ -2630,6 +2758,7 @@ namespace MonopolyDeal
                             }
                             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.DealBreaker__5);
                             MainWindow.playedCard = Card.DealBreaker__5;
+                            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
                             MainWindow.playerTurns[MainWindow.playerNum].finishPlayAction();
                             break;
 
@@ -2650,6 +2779,7 @@ namespace MonopolyDeal
                             MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].RemoveAt(MainWindow.cardNum);
                             MainWindow.AllHands[MainWindow.playerNum].Remove(Card.SlyDeal__3);
                             MainWindow.playedCard = Card.SlyDeal__3;
+                            Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
                             MainWindow.playerTurns[MainWindow.playerNum].finishPlayAction();
                             break;
 
@@ -2701,8 +2831,8 @@ namespace MonopolyDeal
                             MainWindow.propertyCard = Card.PropertyLightBlueBlack__4;
                             checkPlayCard();
                             return;
-                        case Card.PropertyBlackLime__2:
-                            MainWindow.propertyCard = Card.PropertyLimeBlack__2;
+                        case Card.PropertyBlackUtility__2:
+                            MainWindow.propertyCard = Card.PropertyUtilityBlack__2;
                             checkPlayCard();
                             return;
                         case Card.PropertyBlueGreen__4:
@@ -2729,8 +2859,8 @@ namespace MonopolyDeal
                             MainWindow.propertyCard = Card.PropertyLightBlueBrown__1;
                             checkPlayCard();
                             return;
-                        case Card.PropertyLimeBlack__2:
-                            MainWindow.propertyCard = Card.PropertyLimeBlack__2;
+                        case Card.PropertyUtilityBlack__2:
+                            MainWindow.propertyCard = Card.PropertyUtilityBlack__2;
                             checkPlayCard();
                             return;
                         case Card.PropertyOrangePink__2:
@@ -2805,7 +2935,7 @@ namespace MonopolyDeal
                 case MainWindow.turnStage.rent:
                     switch (MainWindow.rentCard)
                     {
-                        case Card.RentBlackLime__1:
+                        case Card.RentBlackUtility__1:
                             MainWindow.propIndex = 1;
                             break;
 
@@ -2867,8 +2997,8 @@ namespace MonopolyDeal
                         case Card.PropertyBlackLightBlue__4:
                             MainWindow.propertyCard = Card.PropertyLightBlueBlack__4;
                             break;
-                        case Card.PropertyBlackLime__2:
-                            MainWindow.propertyCard = Card.PropertyLimeBlack__2;
+                        case Card.PropertyBlackUtility__2:
+                            MainWindow.propertyCard = Card.PropertyUtilityBlack__2;
                             break;
                         case Card.PropertyBlueGreen__4:
                             MainWindow.propertyCard = Card.PropertyGreenBlue__4;
@@ -2888,8 +3018,8 @@ namespace MonopolyDeal
                         case Card.PropertyLightBlueBrown__1:
                             MainWindow.propertyCard = Card.PropertyLightBlueBrown__1;
                             break;
-                        case Card.PropertyLimeBlack__2:
-                            MainWindow.propertyCard = Card.PropertyLimeBlack__2;
+                        case Card.PropertyUtilityBlack__2:
+                            MainWindow.propertyCard = Card.PropertyUtilityBlack__2;
                             break;
                         case Card.PropertyOrangePink__2:
                             MainWindow.propertyCard = Card.PropertyPinkOrange__2;
@@ -2928,45 +3058,54 @@ namespace MonopolyDeal
                 case MainWindow.turnStage.acknowledgeAttack:
                     string stringPlayer = buttonPlayer.Content.ToString();
                     int player = (stringPlayer[7] - 49);
+                    MainWindow.justSayNos++;
                     if (player == MainWindow.playerNum)
                     {
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].Prompt.Content = "Player " + (MainWindow.playerNum + 1) + "Just Said No to your Just Say No.  Get rocked...";
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Content = "OK";
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Visibility = System.Windows.Visibility.Visible;
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Hidden;
-                        if (MainWindow.AllHands[MainWindow.chosenPlayer].Contains(Card.JustSayNo__4))
-                        {
-                            MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Content = "Just Say No";
-                            MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Visible;
-                        }
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Visibility = System.Windows.Visibility.Hidden;
-                        MainWindow.playerTurns[MainWindow.chosenPlayer].buttonBack.Visibility = System.Windows.Visibility.Hidden;
-                        button1.Visibility = System.Windows.Visibility.Hidden;
-                        button2.Visibility = System.Windows.Visibility.Hidden;
-                        button3.Visibility = System.Windows.Visibility.Hidden;
-                        buttonBack.Visibility = System.Windows.Visibility.Hidden;
-                        switch (MainWindow.playedCard)
-                        {
-                            case Card.Birthday__2:
-                                MainWindow.payersLeft.Add(MainWindow.chosenPlayer);
-                                foreach (int i in MainWindow.payersLeft)
-                                {
-                                    Prompt.Content += (i + 1) + ", ";
-                                }
-                                break;
+                        justSayNoOwner();
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "Just Said No to your Just Say No.  Get rocked...";
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Content = "OK";
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].button1.Visibility = System.Windows.Visibility.Visible;
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Hidden;
+                        //if (MainWindow.AllHands[MainWindow.chosenPlayer].Contains(Card.JustSayNo__4))
+                        //{
+                        //    MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Content = "Just Say No";
+                        //    MainWindow.playerTurns[MainWindow.chosenPlayer].button2.Visibility = System.Windows.Visibility.Visible;
+                        //}
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Visibility = System.Windows.Visibility.Hidden;
+                        //MainWindow.playerTurns[MainWindow.chosenPlayer].buttonBack.Visibility = System.Windows.Visibility.Hidden;
+                        //button1.Visibility = System.Windows.Visibility.Hidden;
+                        //button2.Visibility = System.Windows.Visibility.Hidden;
+                        //button3.Visibility = System.Windows.Visibility.Hidden;
+                        //buttonBack.Visibility = System.Windows.Visibility.Hidden;
+                        //switch (MainWindow.playedCard)
+                        //{
+                        //    case Card.Birthday__2:
+                        //        MainWindow.payersLeft.Add(MainWindow.chosenPlayer);
+                        //        foreach (int i in MainWindow.payersLeft)
+                        //        {
+                        //            Prompt.Content += MainWindow.playerNames[i] + ", ";
+                        //        }
+                        //        break;
 
-                            case Card.Rent:
-                                foreach (int i in MainWindow.payersLeft)
-                                {
-                                    Prompt.Content += (i + 1) + ", ";
-                                }
-                                break;
-                        }
-                        return;
+                        //    case Card.Rent:
+                        //        foreach (int i in MainWindow.payersLeft)
+                        //        {
+                        //            Prompt.Content += MainWindow.playerNames[i] + ", ";
+                        //        }
+                        //        break;
+                        //}
+                        //return;
                     }
                     else //Other player just says no...
                     {
-                        justSayNo();
+                        if (MainWindow.justSayNos == 1)
+                        {
+                            justSayNo();
+                        }
+                        else
+                        {
+                            justSayNoAgain();
+                        }
                     }
                     return;
                 #endregion
@@ -2991,7 +3130,7 @@ namespace MonopolyDeal
                     MainWindow.cardType = CardType.Property;
                     MainWindow.propertyCard = MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum];
                     Card card = MainWindow.AllHands[MainWindow.playerNum][MainWindow.cardNum];
-                    if ((card == Card.PropertyBlackGreen__4) || (card == Card.PropertyBlackLightBlue__4) || (card == Card.PropertyBlackLime__2) || (card == Card.PropertyBlueGreen__4) || (card == Card.PropertyBrownLightBlue__1) || (card == Card.PropertyGreenBlack__4) || (card == Card.PropertyGreenBlue__4) || (card == Card.PropertyLightBlueBlack__4) || (card == Card.PropertyLightBlueBrown__1) || (card == Card.PropertyLimeBlack__2) || (card == Card.PropertyOrangePink__2) || (card == Card.PropertyPinkOrange__2) || (card == Card.PropertyRedYellow__3) || (card == Card.PropertyYellowRed__3))
+                    if ((card == Card.PropertyBlackGreen__4) || (card == Card.PropertyBlackLightBlue__4) || (card == Card.PropertyBlackUtility__2) || (card == Card.PropertyBlueGreen__4) || (card == Card.PropertyBrownLightBlue__1) || (card == Card.PropertyGreenBlack__4) || (card == Card.PropertyGreenBlue__4) || (card == Card.PropertyLightBlueBlack__4) || (card == Card.PropertyLightBlueBrown__1) || (card == Card.PropertyUtilityBlack__2) || (card == Card.PropertyOrangePink__2) || (card == Card.PropertyPinkOrange__2) || (card == Card.PropertyRedYellow__3) || (card == Card.PropertyYellowRed__3))
                     {
                         decidePropertyType();
                     }
@@ -3018,13 +3157,16 @@ namespace MonopolyDeal
                     return;
 
                 case MainWindow.turnStage.acknowledgeAttack:
+                    string toDisplay = MainWindow.playerNames[MainWindow.chosenPlayer] + " paid the following cards to " + MainWindow.playerNames[MainWindow.playerNum] + ": ";
                     foreach (Card item in Table_Money.SelectedItems)
                     {
+                        toDisplay += item.ToString() + ", ";
                         MainWindow.AllTableMoney[MainWindow.playerNum].Add(item);
                         MainWindow.AllTableMoney[MainWindow.chosenPlayer].Remove(item);
                     }
                     foreach (Card item in Table_Properties.SelectedItems)
                     {
+                        toDisplay += item.ToString() + ", ";
                         MainWindow.propIndex = MainWindow.getPropertyIndex(item);
                         if (MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].Count >= MainWindow.monopolyPropsNeeded[MainWindow.propIndex])
                         {
@@ -3037,11 +3179,12 @@ namespace MonopolyDeal
                         MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].Remove(item);
                     }
                     showTable();
+                    updateUniversalPrompt(toDisplay);
                     MainWindow.payersLeft.Remove(MainWindow.chosenPlayer);
                     button3.Visibility = System.Windows.Visibility.Hidden;
                     //Table_Money.IsEnabled = false;
                     //Table_Properties.IsEnabled = false;
-                    Prompt.Content = "Player " + (MainWindow.playerNum + 1) + "'s turn...";
+                    Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + "'s turn...";
                     MainWindow.playerTurns[MainWindow.playerNum].finishPlayAction();
                     return;
             }
