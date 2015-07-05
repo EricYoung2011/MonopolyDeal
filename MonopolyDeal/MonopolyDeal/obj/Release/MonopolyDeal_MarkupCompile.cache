@@ -4,11 +4,11 @@
 winexe
 C#
 .cs
-C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Debug\
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\
 MonopolyDeal
 none
 false
-DEBUG;TRACE
+TRACE
 C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\App.xaml
 21758853394
 

@@ -1,0 +1,16 @@
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\bin\Release\MonopolyDeal.exe.config
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\bin\Release\MonopolyDeal.exe
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\bin\Release\MonopolyDeal.pdb
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.csprojResolveAssemblyReference.cache
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MainWindow.baml
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MainWindow.g.cs
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\playerTurn.g.cs
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\App.g.cs
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal_MarkupCompile.cache
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal_MarkupCompile.lref
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\playerTurn.baml
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.g.resources
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.Properties.Resources.resources
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.csproj.GenerateResource.Cache
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.exe
+C:\Users\Eric\Documents\GitHub\MonopolyDeal\MonopolyDeal\MonopolyDeal\obj\Release\MonopolyDeal.pdb
